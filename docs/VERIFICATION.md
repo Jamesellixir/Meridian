@@ -35,3 +35,6 @@ Actual planning runs, workspace CRUD, approval execution, atomic action/receipt 
 Next: after Rivith reviews this foundation, integrate one persisted manual task through the real workspace service and UI. Keep the current branch separate from main until approval.
 
 The Docker preview is running at `http://localhost:8000`, published on laptop loopback only. Stop it with `docker compose stop`; this retains the verification volume.
+# Current publication and phase 2
+
+Phase 1 was merged through [PR #1](https://github.com/Jamesellixir/Meridian/pull/1) at `c5c7490`; both foundation GitHub CI runs passed. The evidence below records the earlier foundation review. [Phase 2 evidence](PHASE-2.md) supersedes its implementation-status statements: manual task creation/listing now works; coordinator and approvals remain pending.
