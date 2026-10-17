@@ -16,6 +16,6 @@ jac start main.jac --port 8000
 
 On Windows, the equivalent Docker Compose commands are in PHASE-1.md. The Docker engine was repaired without removing its data disk. The official standalone Linux binary was also installed in an isolated `Meridian-Jac` WSL distribution for verification.
 
-`OPENAI_API_KEY` is needed only for the separately invoked live check. Normal tests use mocks. No API key is committed or requested through the UI.
+`OPENAI_API_KEY` must exist in the server environment for planning and optional live checks. Normal tests use mocks. No API key is committed or requested through the UI.
 
-No deployment or merge to main is included. The next implementation phase wires a real persisted task through the workspace facade and UI; it must not bypass the shared contracts.
+Phase 2 is merged into main; the current lead release is local and awaits review before pushing. Start with [the release review guide](LEAD-REVIEW.md). On Windows, `docker compose up -d` installs capabilities through a setup service before starting the app. Both graph data and the standalone Jac package cache use persistent volumes. The first setup may take several minutes; code updates need `docker compose restart meridian`. This runs locally; GitHub stores the source.

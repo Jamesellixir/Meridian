@@ -12,7 +12,7 @@ test "real health endpoint uses the application envelope" {
             data = unwrap_response(response.json());
             assert data["ok"], str(response.json());
             assert data["data"]["contract_version"] == "1.0.0";
-            assert data["data"]["phase"] == "foundation";
+            assert data["data"]["phase"] == "coordinator";
         } finally {
             client.close();
         }

@@ -1,6 +1,6 @@
 # Contract v1 — implementation baseline
 
-Shared DTOs and initial validators now live in `system-code/contracts/`. Phase 1 implements only `POST /function/get_health`; planning and workspace operations below remain the agreed logical interfaces, not implemented routes. Changes require coordinated updates to definitions, callers, and this document.
+Shared DTOs and validators live in `system-code/contracts/`. The local lead release implements health, run lifecycle, exact proposal review, workspace snapshots, manual task create/status, manual event create/update, confirmed availability save/correct/forget and targeted event replanning. See [the review guide](LEAD-REVIEW.md). Richer manual note/calendar/task editing is a teammate extension; no unrestricted commit route is exposed.
 
 ## Common conventions
 
@@ -60,3 +60,15 @@ Minimum error codes: `VALIDATION_ERROR`, `NOT_FOUND`, `VERSION_CONFLICT`, `STALE
 # Implemented phase 2 task endpoints
 
 `create_task(workspace_id, title, request_id)` returns `TaskEnvelope`; `list_tasks(workspace_id)` returns `TasksEnvelope`. Details, error rules and verified boundaries are in [phase 2](PHASE-2.md). Other operations below remain planned unless explicitly marked implemented.
+
+## Local release additions
+
+- `review_proposal(proposal_id, revision, payload_hash, decision)` returns `RunEnvelope`, including durable `receipts` and committed output IDs. Payload comes only from authoritative storage.
+- `replan_run(run_id, expected_version)` returns fresh pending previews; a committed event becomes an `update_event` with the same target ID and expected version.
+- `get_workspace(workspace_id, refresh_id="")` returns `WorkspaceEnvelope`: events, tasks, notes, confirmed preferences and receipts.
+- `save_event(workspace_id, title, start, end, request_id, event_id="", expected_version=0)` creates or updates a manual event. Existing target versions are required for updates.
+- `update_task_status(workspace_id, task_id, expected_version, status)` enforces the current task version.
+- `save_preference(workspace_id, value, request_id)`, `correct_preference(preference_id, expected_version, value)`, and `forget_preference(preference_id, expected_version)` manage explicitly confirmed availability (`morning` or `anytime`), returning `WorkspaceEnvelope`.
+- `new_demo_workspace()` returns an isolated synthetic workspace without deleting prior data.
+
+Cancellation retains committed outputs/receipts and stales only unfinished previews. Clarification is limited to pre-proposal planning; after partial execution, use replan or a new goal rather than silently recreating committed notes/tasks. Approval conflicts return application `VERSION_CONFLICT` or runtime HTTP 409; reload/retry the same review packet to recover the original receipt. Multi-action goals may partially commit, as each approved action has its own atomic receipt.

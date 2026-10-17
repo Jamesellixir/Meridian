@@ -5,9 +5,11 @@ import from contracts.validation { valid_id }
 # Storage stays behind the workspace facade. Public demo endpoints use one local root.
 node StoredTask {
     has id: str, workspace_id: str, title: str, request_id: str;
+    has status: str = "todo", goal_id: (str | None) = None, due_at: (str | None) = None, version: int = 1;
 
     def to_record -> TaskRecord {
-        return TaskRecord(id=self.id, workspace_id=self.workspace_id, title=self.title);
+        return TaskRecord(id=self.id, workspace_id=self.workspace_id, title=self.title,
+            status=self.status,goal_id=self.goal_id,due_at=self.due_at,version=self.version);
     }
 }
 

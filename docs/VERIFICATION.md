@@ -38,3 +38,5 @@ The Docker preview is running at `http://localhost:8000`, published on laptop lo
 # Current publication and phase 2
 
 Phase 1 was merged through [PR #1](https://github.com/Jamesellixir/Meridian/pull/1) at `c5c7490`; both foundation GitHub CI runs passed. The evidence below records the earlier foundation review. [Phase 2 evidence](PHASE-2.md) supersedes its implementation-status statements: manual task creation/listing now works; coordinator and approvals remain pending.
+
+Phase 2 was subsequently merged through [PR #2](https://github.com/Jamesellixir/Meridian/pull/2) at `c88914d`, after both CI runs passed. [Phase 3](PHASE-3.md) now implements coordinator planning previews, clarification/cancellation and durable checkpoints. Approval execution remains pending.

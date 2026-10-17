@@ -1,6 +1,6 @@
 # Acceptance and verification
 
-The first slice passes locally; see [phase 2 evidence](PHASE-2.md). Remaining checks are not run unless that evidence explicitly says otherwise.
+The local lead release passes its coordinator/approval/replanning checks; see [release review evidence](LEAD-REVIEW.md). Earlier phase-specific evidence remains historical. Final presentation/video and public-hosting readiness are separate team deliverables.
 
 | Check | Expected evidence |
 |---|---|
