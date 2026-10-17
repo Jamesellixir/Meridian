@@ -59,7 +59,7 @@ def _planning_context(workspace_id: str, goal: str, duration: int, today: str, e
         if preference.key == "availability" and preference.value in ["morning", "anytime"] {
             morning = morning or preference.value == "morning";
             dependencies.append({"id":preference.id,"version":preference.version});
-        } else { raise ValueError("A confirmed preference needs a supported scheduling rule."); }
+        } elif preference.key != "soul" { raise ValueError("A confirmed preference needs a supported scheduling rule."); }
     }
     slots = _slots(events,goal,duration,today,morning);
     tasks = read_tasks(workspace_id).data.tasks;

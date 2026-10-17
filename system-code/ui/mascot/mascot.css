@@ -19,3 +19,7 @@
 /* Jump vertically in the same spot; never rotate or drift sideways. */
 @keyframes meridian-jump { 0%, 100% { transform: translateY(0); } 45%, 55% { transform: translateY(-8%); } }
 @media (prefers-reduced-motion: reduce) { .meridian-mascot * { animation: none !important; } }
+
+div.meridian-mascot__character { background-position: center; background-size: 100% 100%; background-repeat: no-repeat; }
+.meridian-mascot.approval-completed .meridian-mascot__character { animation-iteration-count: 2; }
+.meridian-mascot.approval-completed .meridian-mascot__frame { animation: meridian-jump 1s 2.8s ease-in-out infinite; }

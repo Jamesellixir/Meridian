@@ -2,7 +2,7 @@ import json;
 import from uuid { uuid4 }
 import from datetime { datetime, timedelta }
 import from zoneinfo { ZoneInfo }
-import from contracts.models { RunRecord, StepRecord, RunData, RunEnvelope, APIError, ProposalRecord, ActivityEntry, PreferenceDependency }
+import from contracts.models { RunRecord, StepRecord, RunData, RunEnvelope, APIError, ProposalRecord, ActivityEntry, PreferenceDependency, ConversationTurn }
 import from contracts.validation { valid_id }
 import from workspace.records { _receipts }
 
@@ -13,7 +13,7 @@ node StoredRun {
         questions_json: str = "[]", error_code: str = "", error_message: str = "", explanation: str = "",
         last_request_id: str = "", input_ids: list[str] = [], advance_ids: list[str] = [], initial_goal: str = "",
         attempt_id: (str | None) = None, lease_expires_at: (str | None) = None;
-    has output_ids: list[str] = [], needs_replan: bool = False;
+    has output_ids: list[str] = [], needs_replan: bool = False, context_json: str = "[]";
 }
 
 def _now -> str { return datetime.now(ZoneInfo("Asia/Colombo")).isoformat(); }
@@ -48,7 +48,7 @@ def _view(run: StoredRun) -> RunEnvelope {
     error = APIError(code=run.error_code, message=run.error_message) if run.error_code else None;
     record = RunRecord(id=run.id, workspace_id=run.workspace_id, goal=run.goal, status=run.status,
         version=run.version, steps=steps, error=error, attempt_id=run.attempt_id, lease_expires_at=run.lease_expires_at,output_ids=run.output_ids);
-    return RunEnvelope(ok=True, data=RunData(run=record, proposals=proposals, activity=activity, questions=json.loads(run.questions_json),explanation=run.explanation,receipts=_receipts(run.workspace_id,run.id)));
+    return RunEnvelope(ok=True, data=RunData(run=record, proposals=proposals, activity=activity, questions=json.loads(run.questions_json),explanation=run.explanation,receipts=_receipts(run.workspace_id,run.id),conversation=[ConversationTurn(user=t["user"],assistant=t["assistant"]) for t in json.loads(getattr(run,"context_json","[]"))]));
 }
 
 def _activity(run: StoredRun, tool: str, outcome: str) -> None {
@@ -57,7 +57,7 @@ def _activity(run: StoredRun, tool: str, outcome: str) -> None {
     run.activity_json = json.dumps(entries);
 }
 
-def _start(text: str, workspace_id: str, request_id: str) -> RunEnvelope {
+def _start(text: str, workspace_id: str, request_id: str, parent_run_id: str = "") -> RunEnvelope {
     text = text.strip();
     if not text or len(text) > 4000 or not valid_id(workspace_id) or not valid_id(request_id) {
         return _error("VALIDATION_ERROR","Use a goal of 1 to 4000 characters and valid workspace/request IDs.");
@@ -69,9 +69,15 @@ def _start(text: str, workspace_id: str, request_id: str) -> RunEnvelope {
             return _view(run);
         }
     }
+    context: list[dict] = [];
+    if parent_run_id {
+        parent = _find(parent_run_id);
+        if parent is None or parent.workspace_id != workspace_id { return _error("NOT_FOUND","Conversation not found in this workspace."); }
+        context = json.loads(getattr(parent,"context_json","[]"))[-6:] + [{"user":parent.goal,"assistant":parent.explanation}];
+    }
     # Local demo cost guard, persisted and not controllable through browser counters.
-    if len(existing) >= 30 { return _error("USAGE_LIMIT","This demo has reached its 30-run limit."); }
-    run = root ++> StoredRun(id=str(uuid4()),workspace_id=workspace_id,goal=text,initial_goal=text,request_id=request_id);
+    if len([r for r in existing if r.workspace_id == workspace_id]) >= 100 { return _error("USAGE_LIMIT","This workspace has reached its 100-message demo limit. Open a new review workspace to continue."); }
+    run = root ++> StoredRun(id=str(uuid4()),workspace_id=workspace_id,goal=text,initial_goal=text,request_id=request_id,context_json=json.dumps(context));
     _activity(run,"start_goal","Goal queued; no workspace actions executed.");
     return _view(run);
 }

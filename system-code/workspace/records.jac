@@ -50,9 +50,10 @@ def _event_node(workspace_id: str, event_id: str) -> (StoredCalendarEvent | None
 }
 
 def _manual_event(workspace_id: str, title: str, start: str, end: str, request_id: str,
-    event_id: str = "", expected_version: int = 0) -> WorkspaceEnvelope {
+    event_id: str = "", expected_version: int = 0, color: str = "blue") -> WorkspaceEnvelope {
     if not valid_id(workspace_id) or not valid_id(request_id) { return _workspace_error("VALIDATION_ERROR","Invalid workspace/request ID."); }
-    fingerprint = json.dumps([title.strip(),start,end,event_id,expected_version]);
+    if color not in ["blue","green","purple","peach","rose"] { return _workspace_error("VALIDATION_ERROR","Choose a supported event color."); }
+    fingerprint = json.dumps([title.strip(),start,end,event_id,expected_version,color]);
     for request in [root -->][?:StoredEventRequest] {
         if request.workspace_id == workspace_id and request.request_id == request_id {
             if request.fingerprint != fingerprint { return _workspace_error("IDEMPOTENCY_CONFLICT","Request ID already used with different content."); }
@@ -65,7 +66,7 @@ def _manual_event(workspace_id: str, title: str, start: str, end: str, request_i
             return _workspace(workspace_id);
         }
     }
-    record = EventRecord(id=event_id or str(uuid4()),workspace_id=workspace_id,title=title.strip(),start=start,end=end);
+    record = EventRecord(id=event_id or str(uuid4()),workspace_id=workspace_id,title=title.strip(),start=start,end=end,color=color);
     if not validate_event(record).ok { return _workspace_error("VALIDATION_ERROR","Use a title and increasing ISO timestamps with timezone offsets."); }
     target = _event_node(workspace_id,event_id) if event_id else None;
     if event_id and target is None { return _workspace_error("NOT_FOUND","Event not found in this workspace."); }

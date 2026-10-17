@@ -15,9 +15,9 @@ Open `preview.html` directly in a browser; no installation required. Controls ar
 
 ## Jac integration
 
-`AgentMascot.cl.jac` imports the shared CSS. Render `<AgentMascot image_src={served_pose_atlas_url} status={run.status} />` using the URL of **meridian-poses.png**, not the original reference image. Actual asset registration and application mounting remain with the shared skeleton owner.
+`PlannerPanel` renders `<AgentMascot status={mascot_state()} />`. The CSS embeds the atlas through `assets/atlas.css`; no shared static registration is required. Jac 0.34.24 leaves CSS image URLs uncopied and attempts to decode direct PNG imports as UTF-8, so this source artwork is embedded as a data URI. The PNG remains the editable source; the encoded asset is excluded from meaningful source-language metrics. Real requests show working, planning advancement shows thinking, and server run states select waiting/input/completed/failed poses. Validation and network errors shake the head. Successful manual saves jump only after the server confirms the write.
 
-Maps queued/running/waiting_for_approval/completed/failed/cancelled to thinking/working/waiting/success/error/idle. Explicit `approval` or `approved` selects the nod; `approved` is a presentation input, not a newly invented run status. A parent may supply it only after a genuine approval outcome, never merely when review is pending. Unknown input falls back to idle.
+Review approval nods only after a successful response includes a receipt matching the exact proposal ID and revision idempotency key. On the final approved action, two nod cycles precede the completion jump. Pending approval stays neutral. Starting another operation clears the previous presentation outcome. No simulated tool activity is introduced.
 
 The component does not decide or perform approvals, tool calls, or writes. Feed actual server state. Reduced-motion preferences freeze pose frames and disable jumping.
 
@@ -25,4 +25,4 @@ The component does not decide or perform approvals, tool calls, or writes. Feed 
 
 Browser checks passed in headless Chrome/Playwright: seven controls, correct row selection, four distinct frame offsets for each pose, vertical-only success jump, reduced-motion override, and no browser errors. The thinking/working/nodding/shaking contact sheet was visually inspected. Original image remains unchanged. No root configuration, backend, dependencies, or shared contracts are changed by this component.
 
-The merged foundation now pins Jac 0.34.24 (see `docs/PHASE-1.md`). This Windows workstation has no installed WSL distribution or Docker executable, so the mascot's Jac compilation/integration remains unverified. Run the project checks and verify the component in the pinned runtime before integration. The existing CI checks `main.jac`, which does not yet import the mascot; a green foundation check alone does not prove mascot compilation. The HTML preview uses a small demonstration-only JavaScript controller.
+The project uses pinned Jac 0.34.24 in Docker/WSL. Focused compilation and live browser verification results are recorded in local continuation notes outside Git. The standalone HTML controls remain a presentation preview, not an execution demo.

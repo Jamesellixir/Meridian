@@ -7,7 +7,7 @@ import from contracts.models { RunEnvelope, GoalSpec }
 import from agent.model { create_live_model, interpret_with, decode_goal }
 import from agent.planner { _draft_with }
 import from workspace.runs { _find, _get, _view, _claim, _finish, _activity }
-import from workspace.planning { _planning_context }
+import from workspace.planning { _planning_context, StoredConfirmedPreference }
 
 def _advance(run_id: str, expected_version: int, request_id: str) -> RunEnvelope {
     prior = _find(run_id);
@@ -27,11 +27,14 @@ def _advance(run_id: str, expected_version: int, request_id: str) -> RunEnvelope
     }
     try {
         if stage == 0 {
-            spec = interpret_with(model,record.goal,today,"Asia/Colombo");
+            preferences = [{"key":p.key,"value":p.value} for p in [root -->][?:StoredConfirmedPreference] if p.workspace_id == record.workspace_id and p.confirmed];
+            conversation_context = json.dumps({"conversation":json.loads(getattr(stored,"context_json","[]")),"confirmed_preferences":preferences});
+            spec = interpret_with(model,record.goal,today,"Asia/Colombo",conversation_context);
+            if spec.intent == "chat" { return _finish(run_id,attempt,"completed",3,explanation=spec.reply); }
             encoded = json.dumps({"title":spec.title,"duration_minutes":spec.duration_minutes,
-                "missing_information":spec.missing_information,"constraints":spec.constraints,"intent":spec.intent});
+                "missing_information":spec.missing_information,"constraints":spec.constraints,"intent":spec.intent,"reply":spec.reply});
             if spec.intent != "plan_session" or spec.missing_information {
-                questions = spec.missing_information or ["Please describe one planning session, including duration and next week or one ISO date."];
+                questions = spec.missing_information or ([spec.reply] if spec.reply else ["Please describe one planning session, including duration and next week or one ISO date."]);
                 return _finish(run_id,attempt,"waiting_for_input",0,spec_json=encoded,questions_json=json.dumps(questions));
             }
             return _finish(run_id,attempt,"queued",1,spec_json=encoded);
