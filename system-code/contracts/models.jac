@@ -12,7 +12,7 @@ obj GoalRequest {
 }
 
 obj HealthData {
-    has service: str = "Meridian", phase: str = "foundation",
+    has service: str = "Meridian", phase: str = "coordinator",
         contract_version: str = "1.0.0", jac_version: str = "0.34.24";
 }
 obj HealthEnvelope {
@@ -89,6 +89,20 @@ obj ActivityEntry {
     has sequence: int, timestamp: str, step_id: str, tool: str,
         outcome: str, record_ids: list[str] = [];
 }
+
+obj RunData {
+    has run: (RunRecord | None) = None,
+        proposals: list[ProposalRecord] = [], activity: list[ActivityEntry] = [],
+        questions: list[str] = [], explanation: str = "", receipts: list[ReceiptRecord] = [];
+}
+obj RunEnvelope { has ok: bool, data: RunData, error: (APIError | None) = None; }
+
+obj WorkspaceData {
+    has workspace_id: str = "", events: list[EventRecord] = [], tasks: list[TaskRecord] = [],
+        notes: list[NoteRecord] = [], preferences: list[PreferenceRecord] = [], receipts: list[ReceiptRecord] = [];
+}
+obj WorkspaceEnvelope { has ok: bool, data: WorkspaceData, error: (APIError | None) = None; }
+
 
 def success(data: dict) -> Envelope { return Envelope(ok=True, data=data); }
 def failure(code: str, message: str, retryable: bool = False) -> Envelope {
