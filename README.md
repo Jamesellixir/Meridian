@@ -2,7 +2,7 @@
 
 A personal planning agent built for the Jac hackathon: calendar, tasks, notes, confirmed preferences, and reviewed actions in one workspace.
 
-**Status:** phase 2 is merged into `main` (PR #2; GitHub CI passed). Phase 3 on `codex/agent` adds durable coordinator runs, model planning, clarification/cancellation and stored action previews. See [phase 3](docs/PHASE-3.md). Approval execution and preference replanning remain later phases. The earlier working name was MKH Muse; this repository uses Meridian.
+**Status:** Rivith's coordinator/integration release is implemented locally on `codex/agent`, awaiting review and permission to push. It includes durable planning, exact approvals, receipts and preference-aware event revisions. Start with [the release review guide](docs/LEAD-REVIEW.md). The remote branch still contains the earlier phase 3 revision; `main` contains phase 2.
 
 ## Start here
 

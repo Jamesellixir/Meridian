@@ -6,9 +6,10 @@ import from contracts.validation { validate_event }
 import from workspace.tasks { read_tasks }
 
 # These stable storage types are the facade boundary for subsequent manual tools.
-node StoredCalendarEvent { has record: EventRecord; }
+node StoredCalendarEvent { has record: EventRecord, request_id: str = "", fingerprint: str = ""; }
 node StoredConfirmedPreference {
     has id: str, workspace_id: str, key: str, value: str, version: int = 1, confirmed: bool = True;
+    has source: str = "explicit user confirmation", request_id: str = "";
 }
 
 def _slots(events: list[EventRecord], goal: str, duration: int, today: str, morning: bool = False) -> list[CandidateSlot] {
@@ -49,8 +50,8 @@ def _slots(events: list[EventRecord], goal: str, duration: int, today: str, morn
     return results;
 }
 
-def _planning_context(workspace_id: str, goal: str, duration: int, today: str) -> dict {
-    events = [item.record for item in [root -->][?:StoredCalendarEvent] if item.record.workspace_id == workspace_id];
+def _planning_context(workspace_id: str, goal: str, duration: int, today: str, exclude_event_id: str = "") -> dict {
+    events = [item.record for item in [root -->][?:StoredCalendarEvent] if item.record.workspace_id == workspace_id and item.record.id != exclude_event_id];
     preferences = [item for item in [root -->][?:StoredConfirmedPreference] if item.workspace_id == workspace_id and item.confirmed];
     morning = "morning" in goal.lower();
     dependencies: list[dict] = [];

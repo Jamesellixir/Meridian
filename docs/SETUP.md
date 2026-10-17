@@ -18,4 +18,4 @@ On Windows, the equivalent Docker Compose commands are in PHASE-1.md. The Docker
 
 `OPENAI_API_KEY` must exist in the server environment for planning and optional live checks. Normal tests use mocks. No API key is committed or requested through the UI.
 
-Phase 2 is merged into main. Phase 3 provides planning previews; see [its runtime and verification notes](PHASE-3.md). On Windows, `docker compose up -d` installs capabilities through a setup service before starting the app. Both graph data and the standalone Jac package cache use persistent volumes. The first setup may take several minutes; code updates need `docker compose restart meridian`. This runs locally; GitHub stores the source.
+Phase 2 is merged into main; the current lead release is local and awaits review before pushing. Start with [the release review guide](LEAD-REVIEW.md). On Windows, `docker compose up -d` installs capabilities through a setup service before starting the app. Both graph data and the standalone Jac package cache use persistent volumes. The first setup may take several minutes; code updates need `docker compose restart meridian`. This runs locally; GitHub stores the source.

@@ -4,6 +4,7 @@ import from datetime { datetime, timedelta }
 import from zoneinfo { ZoneInfo }
 import from contracts.models { RunRecord, StepRecord, RunData, RunEnvelope, APIError, ProposalRecord, ActivityEntry, PreferenceDependency }
 import from contracts.validation { valid_id }
+import from workspace.records { _receipts }
 
 node StoredRun {
     has id: str, workspace_id: str, goal: str, request_id: str,
@@ -12,6 +13,7 @@ node StoredRun {
         questions_json: str = "[]", error_code: str = "", error_message: str = "", explanation: str = "",
         last_request_id: str = "", input_ids: list[str] = [], advance_ids: list[str] = [], initial_goal: str = "",
         attempt_id: (str | None) = None, lease_expires_at: (str | None) = None;
+    has output_ids: list[str] = [], needs_replan: bool = False;
 }
 
 def _now -> str { return datetime.now(ZoneInfo("Asia/Colombo")).isoformat(); }
@@ -34,7 +36,7 @@ def _view(run: StoredRun) -> RunEnvelope {
         if run.status == "waiting_for_approval" and index == 2 { state = "waiting_for_approval"; }
         steps.append(StepRecord(id=name, status=state, depends_on_step_ids=[] if index == 0 else [["interpret", "read_workspace"][index - 1]]));
     }
-    proposals = [ProposalRecord(id=p["id"], workspace_id=run.workspace_id, run_id=run.id, kind=p["kind"], payload=p["payload"], payload_hash=p["payload_hash"],status=p["status"],
+    proposals = [ProposalRecord(id=p["id"], workspace_id=run.workspace_id, run_id=run.id, kind=p["kind"], payload=p["payload"], payload_hash=p["payload_hash"],status=p["status"],revision=p.get("revision",1),expected_target_version=p.get("expected_target_version"),
         preference_dependencies=[PreferenceDependency(id=d["id"],version=d["version"]) for d in p.get("preference_dependencies",[])]) for p in json.loads(run.proposals_json)];
     for proposal in proposals {
         if proposal.kind == "create_event" {
@@ -45,8 +47,8 @@ def _view(run: StoredRun) -> RunEnvelope {
     activity = [ActivityEntry(sequence=a["sequence"], timestamp=a["timestamp"], step_id=a["step_id"], tool=a["tool"], outcome=a["outcome"]) for a in json.loads(run.activity_json)];
     error = APIError(code=run.error_code, message=run.error_message) if run.error_code else None;
     record = RunRecord(id=run.id, workspace_id=run.workspace_id, goal=run.goal, status=run.status,
-        version=run.version, steps=steps, error=error, attempt_id=run.attempt_id, lease_expires_at=run.lease_expires_at);
-    return RunEnvelope(ok=True, data=RunData(run=record, proposals=proposals, activity=activity, questions=json.loads(run.questions_json),explanation=run.explanation));
+        version=run.version, steps=steps, error=error, attempt_id=run.attempt_id, lease_expires_at=run.lease_expires_at,output_ids=run.output_ids);
+    return RunEnvelope(ok=True, data=RunData(run=record, proposals=proposals, activity=activity, questions=json.loads(run.questions_json),explanation=run.explanation,receipts=_receipts(run.workspace_id,run.id)));
 }
 
 def _activity(run: StoredRun, tool: str, outcome: str) -> None {
@@ -130,6 +132,7 @@ def _input(run_id: str, expected_version: int, text: str, request_id: str) -> Ru
     if request_id in run.input_ids { return _view(run); }
     if run.version != expected_version { return _error("VERSION_CONFLICT","Run changed. Reload first."); }
     if run.status != "waiting_for_input" { return _error("INVALID_STATE","This run is not waiting for input."); }
+    if run.stage >= 3 { return _error("INVALID_STATE","Use Replan pending actions to preserve already committed records. Start a new goal to change its content."); }
     if not valid_id(request_id) or not text.strip() or len(run.goal) + len(text) + 1 > 4000 or len(run.input_ids) >= 3 {
         return _error("VALIDATION_ERROR","Supply bounded clarification text; at most three rounds are supported.");
     }
@@ -151,8 +154,10 @@ def _cancel(run_id: str, expected_version: int) -> RunEnvelope {
     run.attempt_id = None; run.lease_expires_at = None;
     # Pending previews are retained as stale, never executable.
     proposals = json.loads(run.proposals_json);
-    for proposal in proposals { proposal["status"] = "stale"; }
+    for proposal in proposals {
+        if proposal["status"] in ["pending","rejected"] { proposal["status"] = "stale"; }
+    }
     run.proposals_json = json.dumps(proposals);
-    _activity(run,"cancel_run","Run cancelled; no planning actions executed.");
+    _activity(run,"cancel_run","Run cancelled; previously committed records retained.");
     return _view(run);
 }

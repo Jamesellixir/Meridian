@@ -66,7 +66,8 @@ def _advance(run_id: str, expected_version: int, request_id: str) -> RunEnvelope
                 "payload_hash":hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
                 "status":"pending","preference_dependencies":context["preference_dependencies"] if action["kind"] == "create_event" else []});
         }
-        return _finish(run_id,attempt,"waiting_for_approval",3,proposals_json=json.dumps(proposals),explanation=draft.explanation);
+        return _finish(run_id,attempt,"waiting_for_approval",3,proposals_json=json.dumps(proposals),
+            explanation="Available slot: " + (slot["start"] as str) + " to " + (slot["end"] as str) + " (" + (slot["timezone"] as str) + "). Agenda and tasks use supplied information.");
     } except ValueError {
         return _finish(run_id,attempt,"failed",stage,error_code="VALIDATION_ERROR",error_message="Planning data or model output failed validation. No actions executed.");
     } except Exception {

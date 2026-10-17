@@ -17,5 +17,5 @@ jobs:
       - uses: actions/checkout@v4
       - run: jac --version
       - run: jac install --no-npm
-      - run: jac check main.jac app/api.jac agent/coordinator.jac agent/planner.jac workspace/runs.jac workspace/planning.jac ui/planner.jac ui/shell.jac
+      - run: jac check main.jac app/api.jac agent/coordinator.jac agent/planner.jac agent/review.jac workspace/runs.jac workspace/planning.jac workspace/actions.jac workspace/reviews.jac workspace/records.jac workspace/preferences.jac workspace/replan.jac ui/planner.jac ui/shell.jac
       - run: jac test -d tests/
