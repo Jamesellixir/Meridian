@@ -57,3 +57,6 @@ Run statuses: `queued, running, waiting_for_input, waiting_for_approval, complet
 Jac 0.34.24's native byLLM schema generation raises an AttributeError for this imported GoalSpec metadata on a live provider call. The verified adapter therefore requests text and strictly decodes a JSON object into the shared Jac GoalSpec, rejecting extra fields, incorrect scalar/list types and invalid planning intents. It makes at most two calls, with a 30-second timeout and 1024 output-token limit per call. Provider errors propagate without repair retries. No framework files are patched.
 
 Minimum error codes: `VALIDATION_ERROR`, `NOT_FOUND`, `VERSION_CONFLICT`, `STALE_PROPOSAL`, `CALENDAR_CONFLICT`, `NO_AVAILABLE_SLOT`, `PROVIDER_ERROR`, `TOOL_ERROR`, `CANCELLED`. Preserve the proposal on failed commit; return an actionable error and require new review when its content must change.
+# Implemented phase 2 task endpoints
+
+`create_task(workspace_id, title, request_id)` returns `TaskEnvelope`; `list_tasks(workspace_id)` returns `TasksEnvelope`. Details, error rules and verified boundaries are in [phase 2](PHASE-2.md). Other operations below remain planned unless explicitly marked implemented.

@@ -2,7 +2,7 @@
 
 A personal planning agent built for the Jac hackathon: calendar, tasks, notes, confirmed preferences, and reviewed actions in one workspace.
 
-**Status:** phase 1 foundation, under local review on `codex/agent`. Shared Jac contracts, input validation, a real health endpoint, and a Jac frontend shell are implemented. The coordinator, action execution, workspace CRUD and replanning are later phases. The earlier working name was MKH Muse; this repository uses Meridian.
+**Status:** phase 1 is merged into `main` (PR #1; GitHub CI passed). Phase 2 is implemented on `codex/agent`: create/list tasks through a Jac UI and durable graph storage, with validation and safe sequential retries. See [phase 2 evidence](docs/PHASE-2.md). Coordinator planning, approvals and remaining workspace operations are later phases. The earlier working name was MKH Muse; this repository uses Meridian.
 
 ## Start here
 
@@ -18,7 +18,7 @@ Each contributor and their development environment uses these same project speci
 
 ## First working milestone
 
-The foundation pins Jac 0.34.24 and establishes the contracts and verification shell. The next milestone is a complete flow: create a task through the UI, reload, and see the same persisted task. Both teammates should update from the reviewed foundation before integrating.
+The foundation pins Jac 0.34.24. The first persisted task flow is now implemented and verified locally, including reload and server restart. Both teammates should update from `main` and coordinate the phase 2 interface/storage changes before integrating their work.
 
 See [setup](docs/SETUP.md) for runtime commands and the distinction between verified native Linux checks and container checks.
 

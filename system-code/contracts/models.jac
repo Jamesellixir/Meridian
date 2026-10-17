@@ -62,6 +62,10 @@ obj TaskRecord {
         status: str = "todo", goal_id: (str | None) = None,
         due_at: (str | None) = None, version: int = 1;
 }
+obj TaskData { has task: (TaskRecord | None) = None; }
+obj TasksData { has tasks: list[TaskRecord] = []; }
+obj TaskEnvelope { has ok: bool, data: TaskData, error: (APIError | None) = None; }
+obj TasksEnvelope { has ok: bool, data: TasksData, error: (APIError | None) = None; }
 obj NoteRecord {
     has id: str, workspace_id: str, title: str, body: str,
         goal_id: (str | None) = None, version: int = 1;

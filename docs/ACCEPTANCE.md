@@ -1,10 +1,10 @@
 # Acceptance and verification
 
-All checks below are **not run** at the documentation baseline. Record actual results and commit IDs as implementation lands.
+The first slice passes locally; see [phase 2 evidence](PHASE-2.md). Remaining checks are not run unless that evidence explicitly says otherwise.
 
 | Check | Expected evidence |
 |---|---|
-| First slice | UI-created task survives reload and server restart |
+| First slice — passed locally | UI-created task survives reload and server restart; stable UUID confirmed by API |
 | Complete goal | Real model input produces agenda/tasks/event proposals; approved records exist in storage |
 | Exact approval | Changed payload/revision cannot reuse approval; forged direct commit is rejected |
 | Denial | Rejected proposal performs no write |
