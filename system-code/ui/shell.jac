@@ -1,5 +1,6 @@
 sv import from app.api { get_health, HealthData, HealthEnvelope }
 sv import from app.api { create_task, list_tasks, TaskRecord, TaskData, TasksData, TaskEnvelope, TasksEnvelope, APIError }
+import from .planner { PlannerPanel }
 
 def:pub FoundationShell -> JsxElement {
     has status: str = "Checking server...";
@@ -39,7 +40,7 @@ def:pub FoundationShell -> JsxElement {
         message = "";
         key = request_id;
         if not key {
-            key = crypto.randomUUID();
+            key = str(crypto.randomUUID()); # jac:ignore[E1032,W2001,W1051]
             request_id = key;
         }
         try {
@@ -74,6 +75,7 @@ def:pub FoundationShell -> JsxElement {
         {loading and <p>Loading tasks...</p>}
         {not loading and len(tasks) == 0 and <p>No tasks yet. Add your first task above.</p>}
         <ul>{for task in tasks { <li key={task.id}>{task.title}{" — "}{task.status}</li> }}</ul>
-        <p>Tasks are saved locally. Planning and approvals arrive in later phases.</p>
+        <p>Tasks are saved locally. Plan previews appear below; action execution arrives in phase 4.</p>
+        <PlannerPanel />
     </main>;
 }

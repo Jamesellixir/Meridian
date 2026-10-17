@@ -1,6 +1,6 @@
 # Contract v1 — implementation baseline
 
-Shared DTOs and initial validators now live in `system-code/contracts/`. Phase 1 implements only `POST /function/get_health`; planning and workspace operations below remain the agreed logical interfaces, not implemented routes. Changes require coordinated updates to definitions, callers, and this document.
+Shared DTOs and validators live in `system-code/contracts/`. Health, manual task create/list and the phase 3 run endpoints are implemented. Review/commit, full workspace CRUD and preference mutation operations below remain planned. See [phase 3](PHASE-3.md) for executable endpoint inputs and boundaries. Changes require coordinated updates to definitions, callers, and this document.
 
 ## Common conventions
 
