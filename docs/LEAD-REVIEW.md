@@ -1,6 +1,6 @@
 # Rivith's release review
 
-This local revision completes the coordinator, contracts, exact approvals, integration and verification work. It is **not pushed**. The existing branch is `codex/agent`; the remote still contains the earlier phase 3 revision. Review the local working-tree changes and running application before approving publication.
+This revision completes the coordinator, contracts, exact approvals, integration and verification work. Rivith reviewed the local application and approved publication to `codex/agent`. This guide records the review procedure and local verification evidence.
 
 The earlier repository numbered phases 1–3 only. The following eight delivery gates reconcile the remaining agreed responsibilities without expanding the product scope.
 
@@ -52,7 +52,7 @@ Code changes need `docker compose restart meridian`. Keep both named volumes; de
 
 ## Publication boundary
 
-No new commit, push, merge, PR update or public deployment is authorized until Rivith approves this local revision. After approval, commit the reviewed changes and push `codex/agent`; integrate with `main` only when requested. CI cannot validate unpushed changes, so report local checks separately from the older remote runs.
+Rivith approved committing and pushing this reviewed revision to `codex/agent`. Integration with `main` and public deployment require a separate request. The checks recorded below are local verification evidence; remote CI results must be assessed independently after publication.
 
 ## Verified local outcome
 

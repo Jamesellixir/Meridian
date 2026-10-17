@@ -2,7 +2,7 @@
 
 A personal planning agent built for the Jac hackathon: calendar, tasks, notes, confirmed preferences, and reviewed actions in one workspace.
 
-**Status:** Rivith's coordinator/integration release is implemented locally on `codex/agent`, awaiting review and permission to push. It includes durable planning, exact approvals, receipts and preference-aware event revisions. Start with [the release review guide](docs/LEAD-REVIEW.md). The remote branch still contains the earlier phase 3 revision; `main` contains phase 2.
+**Status:** Rivith's coordinator/integration release is reviewed and approved for publication on `codex/agent`. It includes durable planning, exact approvals, receipts and preference-aware event revisions. Start with [the release review guide](docs/LEAD-REVIEW.md). Integration with `main` and public deployment require a separate release decision.
 
 ## Start here
 
