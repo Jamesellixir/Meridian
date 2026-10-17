@@ -19,12 +19,13 @@ def validate_goal_request(request: GoalRequest) -> Envelope {
 }
 
 def validate_goal_spec(spec: GoalSpec) -> Envelope {
-    if spec.intent not in ["plan_session", "clarify", "unsupported"] {
+    if spec.intent not in ["plan_session", "clarify", "unsupported", "chat"] {
         return failure("VALIDATION_ERROR", "Unknown planning intent.");
     }
     if not spec.title.strip() or len(spec.title) > 200 or spec.duration_minutes < 0 or spec.duration_minutes > 480 {
         return failure("VALIDATION_ERROR", "Invalid goal title or duration.");
     }
+    if spec.intent == "chat" and not spec.reply.strip() { return failure("VALIDATION_ERROR", "Chat needs a reply."); }
     if spec.intent == "plan_session" and spec.duration_minutes < 1 {
         return failure("VALIDATION_ERROR", "A session needs a positive duration.");
     }

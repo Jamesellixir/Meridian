@@ -1,0 +1,25 @@
+.meridian-mascot { --accent: #589eea; width: min(100%, 380px); margin: 0; color: #24405e; font: 500 14px/1.5 system-ui, sans-serif; }
+.meridian-mascot__stage { position: relative; aspect-ratio: 1; overflow: hidden; isolation: isolate; }
+.meridian-mascot__frame { position: relative; width: 100%; height: 100%; overflow: hidden; }
+/* Four equal columns/rows. Pose motion comes from artwork, except jumping. */
+.meridian-mascot__character { position: absolute; display: block; width: 400%; height: 400%; max-width: none; left: 0; top: -200%; pointer-events: none; user-select: none; }
+.meridian-mascot figcaption { display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 26px; }
+.meridian-mascot__indicator { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.meridian-mascot.is-thinking .meridian-mascot__character { top: 0; animation: meridian-frames 2.4s step-end infinite; }
+.meridian-mascot.is-working .meridian-mascot__character { top: -100%; animation: meridian-frames .8s step-end infinite; }
+.meridian-mascot.is-waiting { --accent: #b78438; }
+.meridian-mascot.is-approval { --accent: #26916d; }
+.meridian-mascot.is-approval .meridian-mascot__character { top: -200%; animation: meridian-frames 1.4s step-end infinite; }
+.meridian-mascot.is-success { --accent: #26916d; }
+.meridian-mascot.is-success .meridian-mascot__character { top: -200%; }
+.meridian-mascot.is-success .meridian-mascot__frame { animation: meridian-jump 1s ease-in-out infinite; }
+.meridian-mascot.is-error { --accent: #c75b6b; }
+.meridian-mascot.is-error .meridian-mascot__character { top: -300%; animation: meridian-frames 1.2s step-end infinite; }
+@keyframes meridian-frames { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-25%); } 50% { transform: translateX(-50%); } 75% { transform: translateX(-75%); } }
+/* Jump vertically in the same spot; never rotate or drift sideways. */
+@keyframes meridian-jump { 0%, 100% { transform: translateY(0); } 45%, 55% { transform: translateY(-8%); } }
+@media (prefers-reduced-motion: reduce) { .meridian-mascot * { animation: none !important; } }
+
+div.meridian-mascot__character { background-position: center; background-size: 100% 100%; background-repeat: no-repeat; }
+.meridian-mascot.approval-completed .meridian-mascot__character { animation-iteration-count: 2; }
+.meridian-mascot.approval-completed .meridian-mascot__frame { animation: meridian-jump 1s 2.8s ease-in-out infinite; }

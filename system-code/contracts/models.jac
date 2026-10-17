@@ -24,7 +24,7 @@ obj GoalSpec {
         duration_minutes: int,
         missing_information: list[str],
         constraints: list[str],
-        intent: str;
+        intent: str, reply: str = "";
 }
 
 obj PreferenceDependency { has id: str, version: int; }
@@ -55,7 +55,7 @@ obj RunRecord {
 
 obj EventRecord {
     has id: str, workspace_id: str, title: str, start: str, end: str,
-        timezone: str = "Asia/Colombo", goal_id: (str | None) = None, version: int = 1;
+        timezone: str = "Asia/Colombo", goal_id: (str | None) = None, version: int = 1, color: str = "blue";
 }
 obj TaskRecord {
     has id: str, workspace_id: str, title: str,
@@ -90,10 +90,12 @@ obj ActivityEntry {
         outcome: str, record_ids: list[str] = [];
 }
 
+obj ConversationTurn { has user: str, assistant: str; }
+
 obj RunData {
     has run: (RunRecord | None) = None,
         proposals: list[ProposalRecord] = [], activity: list[ActivityEntry] = [],
-        questions: list[str] = [], explanation: str = "", receipts: list[ReceiptRecord] = [];
+        questions: list[str] = [], explanation: str = "", receipts: list[ReceiptRecord] = [], conversation: list[ConversationTurn] = [];
 }
 obj RunEnvelope { has ok: bool, data: RunData, error: (APIError | None) = None; }
 
