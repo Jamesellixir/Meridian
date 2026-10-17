@@ -1,6 +1,6 @@
 # Contract v1 — implementation baseline
 
-Logical names below are not established routes or Jac syntax. The lead translates them into executable definitions in `system-code/contracts/`; both teammates agree those definitions before parallel implementation. Changes require coordinated updates to definitions, callers, and this document.
+Shared DTOs and initial validators now live in `system-code/contracts/`. Phase 1 implements only `POST /function/get_health`; planning and workspace operations below remain the agreed logical interfaces, not implemented routes. Changes require coordinated updates to definitions, callers, and this document.
 
 ## Common conventions
 
@@ -12,10 +12,13 @@ Every operation resolves a workspace and validates record membership server-side
 
 | Operation | Input | Result data |
 |---|---|---|
-| `start_goal` | `text, workspace_id` | `run_id, run` snapshot |
+| `start_goal` | `text, workspace_id, request_id` | `run_id, run` snapshot; repeat request returns existing run |
+| `advance_run` | `run_id, expected_version, request_id` | One bounded stage and its checkpoint |
 | `get_run` | `run_id` | Run, steps, outputs, proposals, public activity |
+| `provide_input` | `run_id, expected_version, text, request_id` | Clarification/revision accepted into the run |
+| `cancel_run` | `run_id, expected_version` | Cancellation state; already committed outputs retained |
 | `get_workspace` | `workspace_id` | Calendar, tasks, notes, confirmed preferences |
-| `review_proposal` | `proposal_id, revision, decision` (`approve` or `reject`) | Proposal status and receipt or null |
+| `review_proposal` | `proposal_id, revision, payload_hash, decision` (`approve` or `reject`) | Proposal status and receipt or null |
 | `correct_preference` | `preference_id, expected_version, value` | Updated preference, affected run IDs |
 | Manual record operations | Workspace, explicit payload/ID, expected version for updates | Validated record or error |
 
@@ -36,17 +39,21 @@ Workspace identity is explicit or supplied by a validated server context on ever
 
 | Record | Minimum fields |
 |---|---|
-| Run | `id, workspace_id, goal, status, steps, output_ids, error, version` |
+| Run | `id, workspace_id, goal, status, steps, output_ids, error, version, attempt_id, lease_expires_at` |
 | Step | `id, status, depends_on_step_ids, preference_dependencies[{id,version}], output_ids` |
 | Preference | `id, workspace_id, key, value, source, confirmed, version` |
 | Event | `id, workspace_id, title, start, end, timezone, goal_id, version` |
 | Task | `id, workspace_id, title, status, goal_id, due_at, version` |
 | Note | `id, workspace_id, title, body, goal_id, version` |
-| Proposal | `id, workspace_id, run_id, kind, payload, revision, expected_target_version, status` |
+| Proposal | `id, workspace_id, run_id, kind, payload, payload_hash, revision, expected_target_version, preference_dependencies, status` |
 | Receipt | `id, workspace_id, proposal_id, record_ids, committed_at, idempotency_key` |
 
 Manual records may have `goal_id: null`; task `due_at` is nullable. Create proposals have `expected_target_version: null`; update payloads include the target ID. MVP proposal kinds: `create_event`, `update_event`, `create_task`, `create_note`. Preference changes are explicit user operations, not automatic model memory writes.
 
-Run statuses: `queued, running, waiting_for_approval, completed, failed, cancelled`. Proposal statuses: `pending, rejected, committed, stale`. Step statuses: `queued, running, waiting_for_approval, completed, failed, cancelled, stale`. Task statuses: `todo, in_progress, done`. A rejected action is not a successful output; the run waits for a revised plan or explicit cancellation. Mark a run completed only when its required accepted outputs exist and no required proposal is pending.
+Run statuses: `queued, running, waiting_for_input, waiting_for_approval, completed, failed, cancelled`. Proposal statuses: `pending, rejected, committed, stale`. Step statuses: `queued, running, waiting_for_input, waiting_for_approval, completed, failed, cancelled, stale`. Task statuses: `todo, in_progress, done`. A rejected action is not a successful output; the run waits for a revised plan or explicit cancellation. Mark a run completed only when its required accepted outputs exist and no required proposal is pending. Status transitions are enforced in the later coordinator phase; the current DTOs do not themselves authorize transitions or writes.
+
+## Phase 1 provider compatibility
+
+Jac 0.34.24's native byLLM schema generation raises an AttributeError for this imported GoalSpec metadata on a live provider call. The verified adapter therefore requests text and strictly decodes a JSON object into the shared Jac GoalSpec, rejecting extra fields, incorrect scalar/list types and invalid planning intents. It makes at most two calls, with a 30-second timeout and 1024 output-token limit per call. Provider errors propagate without repair retries. No framework files are patched.
 
 Minimum error codes: `VALIDATION_ERROR`, `NOT_FOUND`, `VERSION_CONFLICT`, `STALE_PROPOSAL`, `CALENDAR_CONFLICT`, `NO_AVAILABLE_SLOT`, `PROVIDER_ERROR`, `TOOL_ERROR`, `CANCELLED`. Preserve the proposal on failed commit; return an actionable error and require new review when its content must change.

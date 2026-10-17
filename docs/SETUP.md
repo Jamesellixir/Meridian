@@ -1,18 +1,21 @@
-# Setup and current state
+# Setup
 
-Application code has not been implemented. There is no verified installation command, runnable entry point, model provider, storage configuration, test command, or deployment URL.
+Read [phase 1](PHASE-1.md) for the pinned Jac runtime, requirements and commands, and [verification evidence](VERIFICATION.md) for actual results.
 
-## Lead's first integration session
+The Jac project root is `system-code/`. All authored application and test code is Jac. Optional runtime dependencies come from Jac's dependency resolver; do not install the older standalone `byllm` or `jac-scale` PyPI plugins into this runtime.
 
-1. Confirm the event-supported Jac version and frontend facilities using current official documentation. Record exact versions and supported file/module structure here.
-2. Agree contract v1 with both teammates and write shared executable definitions.
-3. Add the smallest runnable Jac skeleton, dependency manifest, and verified installation/run commands. Do not substitute a large JavaScript frontend.
-4. Choose the model provider with the team. Add a placeholder-only environment template once actual variable names are known. Keep real keys out of Git and browser code.
-5. Have the workspace owner verify a record survives restart. Verify one real model call server-side.
-6. Merge the skeleton to `main`; both teammates update their branches before building against it.
+On Linux with the verified official Jac 0.34.24 binary:
 
-Record commands here only after running them. For each verified milestone, record the commit, command/check, outcome, and limitations. Do not mark mock responses as integration evidence.
+```sh
+cd system-code
+jac install
+jac check main.jac
+jac test -d tests/
+jac start main.jac --port 8000
+```
 
-## Open decisions
+On Windows, the equivalent Docker Compose commands are in PHASE-1.md. The Docker engine was repaired without removing its data disk. The official standalone Linux binary was also installed in an isolated `Meridian-Jac` WSL distribution for verification.
 
-Jac runtime and dependencies; provider/model and key availability; exact persistence/transaction support; executable facade and transport; teammate names; exact demonstration dates, morning hours, and week boundary; organisers' Jac counting method. These are deliberately unresolved, not hidden defaults.
+`OPENAI_API_KEY` is needed only for the separately invoked live check. Normal tests use mocks. No API key is committed or requested through the UI.
+
+No deployment or merge to main is included. The next implementation phase wires a real persisted task through the workspace facade and UI; it must not bypass the shared contracts.

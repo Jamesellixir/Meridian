@@ -1,0 +1,21 @@
+name: Jac foundation
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container:
+      image: jaseci/jaclang:0.34.24@sha256:7af34b90d3812ec65eff40e6d4bce43ceae8c2ca54e8ec3003c7fb6c9fbbb2c4
+    defaults:
+      run:
+        working-directory: system-code
+    steps:
+      - uses: actions/checkout@v4
+      - run: jac --version
+      - run: jac install --no-npm
+      - run: jac check main.jac
+      - run: jac test -d tests/

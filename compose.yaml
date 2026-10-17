@@ -1,0 +1,16 @@
+services:
+  meridian:
+    image: jaseci/jaclang:0.34.24@sha256:7af34b90d3812ec65eff40e6d4bce43ceae8c2ca54e8ec3003c7fb6c9fbbb2c4
+    working_dir: /app
+    entrypoint: ["jac"]
+    command: ["start", "main.jac", "--port", "8000"]
+    stdin_open: true
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - OPENAI_API_KEY
+    volumes:
+      - ./system-code:/app
+      - meridian-runtime:/app/.jac
+volumes:
+  meridian-runtime:

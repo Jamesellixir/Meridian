@@ -1,0 +1,52 @@
+[project]
+name = "meridian"
+version = "0.1.0"
+description = "Meridian personal planning agent"
+entry-point = "main.jac"
+
+[dependencies]
+tzdata = "==2026.5"
+
+[dependencies.npm]
+react = "18.3.1"
+react-dom = "18.3.1"
+react-router-dom = "6.30.1"
+react-error-boundary = "5.0.0"
+zod = "4.3.6"
+
+[dependencies.npm.dev]
+vite = "6.4.1"
+"@vitejs/plugin-react" = "4.7.0"
+typescript = "5.9.3"
+"@types/react" = "18.3.26"
+"@types/react-dom" = "18.3.7"
+
+[serve]
+base_route_app = "app"
+on_conflict = "fail"
+
+[scale.server]
+host = "0.0.0.0"
+port = 8000
+
+[scale.admin]
+enabled = false
+
+[client]
+
+[test]
+directory = "tests"
+verbose = true
+
+[byllm.model]
+default_model = "gpt-5.4-mini-2026-03-17"
+verbose = false
+
+[byllm.call_params]
+max_output_retries = 1
+
+[byllm.parallel]
+enabled = false
+
+[byllm.compaction]
+enabled = false
