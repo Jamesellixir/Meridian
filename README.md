@@ -2,11 +2,11 @@
 
 A personal planning agent built for the Jac hackathon: calendar, tasks, notes, confirmed preferences, and reviewed actions in one workspace.
 
-**Status:** documentation baseline only. Application implementation, runtime installation, model calls, persistence, and deployment have not been verified. The earlier working name was MKH Muse; this repository uses Meridian.
+**Status:** phase 1 foundation, under local review on `codex/agent`. Shared Jac contracts, input validation, a real health endpoint, and a Jac frontend shell are implemented. The coordinator, action execution, workspace CRUD and replanning are later phases. The earlier working name was MKH Muse; this repository uses Meridian.
 
 ## Start here
 
-Read [the product scope](docs/PRODUCT.md), [architecture](docs/ARCHITECTURE.md), and [contract v1](docs/CONTRACTS.md) before implementing a module. Then read your workstream README.
+Read [phase 1 setup](docs/PHASE-1.md) and [verification evidence](docs/VERIFICATION.md), followed by [the product scope](docs/PRODUCT.md), [architecture](docs/ARCHITECTURE.md), and [contract v1](docs/CONTRACTS.md). Then read your workstream README.
 
 | Workstream | Branch | Owned application paths | Start here |
 |---|---|---|---|
@@ -18,9 +18,9 @@ Each contributor and their development environment uses these same project speci
 
 ## First working milestone
 
-Together, pin the event-supported Jac runtime, agree executable contract definitions, and establish a runnable skeleton. Verify one real server-side model call and one stored record. Then merge a complete flow: create a task in the UI, reload, and see the same task. Parallel implementation starts from that shared skeleton.
+The foundation pins Jac 0.34.24 and establishes the contracts and verification shell. The next milestone is a complete flow: create a task through the UI, reload, and see the same persisted task. Both teammates should update from the reviewed foundation before integrating.
 
-No installation or run commands are published yet: the lead must verify them with the selected runtime and record exact commands in [setup](docs/SETUP.md).
+See [setup](docs/SETUP.md) for runtime commands and the distinction between verified native Linux checks and container checks.
 
 ## Collaboration
 
