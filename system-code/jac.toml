@@ -50,3 +50,10 @@ enabled = false
 
 [byllm.compaction]
 enabled = false
+
+[jacpack]
+name = 'Meridian_Test'
+description = 'Jac IDE snapshot for Meridian_Test'
+
+[jachammer]
+project_id = "prj_566ce68fdccc4baebd0cf6583b375b25"
